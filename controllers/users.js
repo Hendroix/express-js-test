@@ -1,5 +1,5 @@
 const users = require("../database/users");
-const { acceptsHtml } = require("../public/utility");
+const { acceptsHtml, dirname } = require("../utility");
 
 const getUsers = async (req, res) => {
     const [rows] = await users.getAllUsers(req, res);
@@ -20,10 +20,14 @@ const getUser = async (req, res) => {
     if (rows.length === 1) {
         res.send(rows[0]);
     } else {
-        res.status(404).send({
-            status: 404,
-            message: "user not found",
-        });
+        if (acceptsHtml(req)) {
+            res.sendFile(dirname + "/public/defaults/not_found.html");
+        } else {
+            res.status(404).send({
+                status: 404,
+                message: "user not found",
+            });
+        }
     }
 };
 
